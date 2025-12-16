@@ -2,8 +2,20 @@
 <html>
   <head>
     <meta name="viewport" content="width:device-width,height:device-height,initial-scale:1.0,user-scalable:no">
+    <style>
+      #game{
+        width:100svw;
+        height:100svh;
+        z-index:0;
+        touch-actions:none;
+        position:absolute;
+        left:0px;
+        top:0px;
+      }
+    </style>
   </head>
   <body>
+    <canvas id="game"></canvas>
     <script type="module" src="./client.js></script>
   </body>
 </html>
