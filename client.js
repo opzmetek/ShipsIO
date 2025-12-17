@@ -1,5 +1,5 @@
 console.log("t2 loading");
-import * as T2 from "https://dyt.neocities.org/t2/t2.module.js";
+import * as T2 from "https://shipsio.pages.dev/t2.module.js";
 console.log("t2 loaded");
 const r=new T2.Renderer(document.getElementById("game"),new OffscreenCanvas(1600,800));
 await r.start();
