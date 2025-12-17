@@ -849,5 +849,13 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
     }
     
   }
+
+function setMaxModelMatrices(n) {
+  MAX_MODEL_MATRICES = n;
+}
+
+function setMaxParticles(n) {
+  MAX_PARTICLES = n;
+}
   
-  export {Renderer, Matrix2D,ORectangle,GPU,OCircle,Shaders,Vector2,RenderObject,Keyboard,Andromeda,setMaxModelMatrices:n=>MAX_MODEL_MATRICES=n,setMaxParticles:n=>MAX_PARTICLES=n};
+  export {Renderer, Matrix2D,ORectangle,GPU,OCircle,Shaders,Vector2,RenderObject,Keyboard,Andromeda,setMaxModelMatrices,setMaxParticles};
