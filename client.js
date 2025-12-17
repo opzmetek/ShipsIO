@@ -4,6 +4,7 @@ console.log("t2 loaded");
 const img = new Image();
 img.src="https://shipsio.pages.dev/image/ships.png";
 img.crossOrigin="anonymous";
+await img.decode();
 const r=new T2.Renderer(document.getElementById("game"),img);
 await r.start();
 const ship=new T2.ORectangle(-0.5,-1,1,2);
