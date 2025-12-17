@@ -1,6 +1,4 @@
 let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
-
-(function(){
   class GPU{
     constructor(id){
       this.ready = this.init(id);
@@ -853,6 +851,3 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
   }
   
   export {Renderer, Matrix2D,ORectangle,GPU,OCircle,Shaders,Vector2,RenderObject,Keyboard,Andromeda,setMaxModelMatrices:n=>MAX_MODEL_MATRICES=n,setMaxParticles:n=>MAX_PARTICLES=n};
-  
-  
-})();
