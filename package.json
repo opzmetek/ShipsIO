@@ -2,10 +2,10 @@
   "name": "background-worker",
   "version": "1.0.0",
   "description": "Render background worker",
-  "main": "worker.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node worker.js"
+    "start": "node server.js"
   },
   "engines": {
     "node": ">=18"
