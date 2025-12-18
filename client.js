@@ -10,6 +10,11 @@ const ship=new T2.ORectangle(-0.5,-1,1,2);
 const world = r.world;
 const andromeda = new T2.Andromeda(r);
 const server = new WebSocket("wss://shipsioserver.onrender.com");
+await new Promise(r=>server.onload=r);
+send({type:"init",name:"OPZ"};
 function start(){
   
+}
+function send(o){
+  server.send(JSON.stringify(o));
 }
