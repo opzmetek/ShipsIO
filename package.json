@@ -1,0 +1,16 @@
+{
+  "name": "background-worker",
+  "version": "1.0.0",
+  "description": "Render background worker",
+  "main": "worker.js",
+  "type": "module",
+  "scripts": {
+    "start": "node worker.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
