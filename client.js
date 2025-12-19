@@ -1,4 +1,5 @@
 import * as T2 from "https://shipsio.pages.dev/t2.module.js";
+const V2 = T2.Vector2;
 T2.setMaxParticles(100_000);
 const img = new Image();
 img.src="https://shipsio.pages.dev/ships.jpg";
@@ -11,9 +12,9 @@ const world = r.world;
 const andromeda = new T2.Andromeda(r);
 const server = new WebSocket("wss://shipsioserver.onrender.com");
 await new Promise((r,e)=>{server.onopen=r;server.onerror=e;});
-send({type:"init",name:"OPZ"});
 function start(){
-  
+  send({type:"init",name:"OPZ"});
+  world.add(ship,new V2(0,0),new V2(0.1,0.2));
 }
 function send(o){
   server.send(JSON.stringify(o));
