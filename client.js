@@ -14,7 +14,7 @@ const server = new WebSocket("wss://shipsioserver.onrender.com");
 await new Promise((r,e)=>{server.onopen=r;server.onerror=e;});
 function start(){
   send({type:"init",name:"OPZ"});
-  world.add(ship,new V2(0,0),new V2(0.1,0.2));
+  world.add(ship,new V2(0,0),new V2(1,1));
 }
 function send(o){
   server.send(JSON.stringify(o));
