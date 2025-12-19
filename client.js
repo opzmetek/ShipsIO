@@ -7,7 +7,7 @@ img.crossOrigin="anonymous";
 await img.decode();
 const r=new T2.Renderer(document.getElementById("game"),img);
 await r.start();
-const ship=new T2.ORectangle(-0.5,-1,1,2);
+const ship=new T2.ORectangle(-3,-4,6,8);
 const world = r.world;
 const andromeda = new T2.Andromeda(r);
 const server = new WebSocket("wss://shipsioserver.onrender.com");
