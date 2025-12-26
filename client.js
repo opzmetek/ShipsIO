@@ -34,7 +34,17 @@ canvas.addEventListener("keydown",e=>{
   }
 });
 canvas.addEventListener("keyup",e=>{
-  delete keys[e.keyCode];
+  const k = e.keyCode;
+  switch(k){
+    case "w":
+    case "s"
+      send({type:"move",vx:0});
+      break;
+    case "a":
+    case "d":
+      send({type:"move",vy:0});
+      break;
+  }
 });
 function start(){
   send({type:"init",name:"OPZ"});
