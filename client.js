@@ -13,7 +13,7 @@ const world = r.world;
 const andromeda = new T2.Andromeda(r);
 const server = new WebSocket("wss://shipsioserver.onrender.com");
 await new Promise((r,e)=>{server.onopen=r;server.onerror=e;});
-server.onmessage = m=>console.log(m);
+server.onmessage = handle;
 start();
 const keys = {};
 canvas.addEventListener("keydown",e=>{
@@ -52,4 +52,20 @@ function start(){
 }
 function send(o){
   server.send(JSON.stringify(o));
+}
+
+async function handle(e){
+  const d = e.data;
+  if(typeof d==="string")handleInit(d);
+  else if(d instanceof Blob)handlePlayers(d);
+}
+
+async function handleInit(d){
+  
+}
+
+async function handlePlayers(d){
+  const b = await d.arrayBuffer();
+  const a = new Float32Array(b);
+  console.log(a);
 }
