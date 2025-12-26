@@ -37,7 +37,7 @@ canvas.addEventListener("keyup",e=>{
   const k = e.keyCode;
   switch(k){
     case "w":
-    case "s"
+    case "s":
       send({type:"move",vx:0});
       break;
     case "a":
