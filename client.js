@@ -15,7 +15,7 @@ const server = new WebSocket("wss://shipsioserver.onrender.com");
 await new Promise((r,e)=>{server.onopen=r;server.onerror=e;});
 server.onmessage = handle;
 start();
-const keys = {};
+const accumulator = new V2();
 canvas.addEventListener("keydown",e=>{
   const k = e.keyCode;
   switch(k){
@@ -46,6 +46,44 @@ canvas.addEventListener("keyup",e=>{
       break;
   }
 });
+if("ontouchstart" in window||navigator.maxTouchPoints>0){
+  setInterval(()=>{
+   send({type:"move",vx:accumulator.x,vy:accumulator.y});
+    accumulator.x=0;
+    accumulator.y=0;
+  },100);
+  const j=nipplejs.create({
+    zone:document.body,
+    mode:'dynamic',
+    color:'red',
+    size:100,
+    treshold:0.1,
+    fadeTime:0.5,
+    multitouch:true,
+    maxNumberOfNipples:2,
+  });
+
+  let rId=null,lId=null;
+
+  j.on('start',(evt,data)=>{
+    if(data.position.x<window.innerWidth/2&&!lId){
+      lId=data.identifier;
+    }else{
+						rId=data.identifier;
+    }
+  });
+
+  j.on('move',(e,d)=>{
+    if(d.identifier===lId){
+      accumulator.addScaled(data.vector,data.force);
+    }
+  });
+
+  j.on('end',(e,d)=>{
+    if(d.identifier===rId)rId=null;
+    else lId=null;
+  });
+}
 function start(){
   send({type:"init",name:"OPZ"});
   world.add(ship,new V2(0,0),new V2(0.1,0.2));
