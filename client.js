@@ -1,3 +1,4 @@
+//TODO player connection, player move, delta handling, player drawing, mouse&sjoystick data sending
 import * as T2 from "https://shipsio.pages.dev/t2.module.js";
 const V2 = T2.Vector2;
 T2.setMaxParticles(100_000);
