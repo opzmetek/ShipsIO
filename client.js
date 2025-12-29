@@ -6,6 +6,7 @@ img.src="https://shipsio.pages.dev/ships.jpg";
 img.crossOrigin="anonymous";
 await img.decode();
 const canvas = document.getElementById("game");
+canvas.onresize=resize;
 const r=new T2.Renderer(canvas,img);
 await r.start();
 const ship=new T2.ORectangle(-3,-4,6,8);
@@ -13,7 +14,9 @@ const world = r.world;
 const andromeda = new T2.Andromeda(r);
 const server = new WebSocket("wss://shipsioserver.onrender.com");
 await new Promise((r,e)=>{server.onopen=r;server.onerror=e;});
+document.getElementById("loader").style.display="none";
 server.onmessage = handle;
+resize();
 start();
 const accumulator = new V2();
 canvas.addEventListener("keydown",e=>{
@@ -69,7 +72,7 @@ if("ontouchstart" in window||navigator.maxTouchPoints>0){
     if(data.position.x<window.innerWidth/2&&!lId){
       lId=data.identifier;
     }else{
-						rId=data.identifier;
+		rId=data.identifier;
     }
   });
 
@@ -88,6 +91,12 @@ function start(){
   send({type:"init",name:"OPZ"});
   world.add(ship,new V2(0,0),new V2(0.1,0.2));
 }
+
+function resize(){
+	canvas.width =window.innerWidth;
+	canvas.height=window.innerHeight;
+}
+
 function send(o){
   server.send(JSON.stringify(o));
 }
@@ -99,7 +108,8 @@ async function handle(e){
 }
 
 async function handleInit(d){
-  
+	const data = JSON.parse(d.toString());
+	console.log(data.x,data.y);
 }
 
 async function handlePlayers(d){
