@@ -8,6 +8,7 @@ await img.decode();
 const canvas = document.getElementById("game");
 canvas.onresize=resize;
 const r=new T2.Renderer(canvas,img);
+const ships = T2.ORectangle.instanced();
 await r.start();
 const ship=new T2.ORectangle(-3,-4,6,8);
 const world = r.world;
@@ -109,11 +110,11 @@ async function handle(e){
 
 async function handleInit(d){
 	const data = JSON.parse(d.toString());
-	console.log(data.x,data.y);
+	console.log("Your ID is: "+data.id);
 }
 
 async function handlePlayers(d){
-  const b = await d.arrayBuffer();
-  const a = new Float32Array(b);
-  console.log(a);
+	const b = await d.arrayBuffer();
+	const [x,y,vx,vy,angle,id] = new Float32Array(b);
+	
 }
