@@ -12,10 +12,17 @@
         left:0px;
         top:0px;
       }
+      #loader{
+        left:50%;
+        right:50%;
+        transform:translate(-50%,-50%);
+        color:white;
+      }
     </style>
   </head>
   <body>
     <canvas id="game"></canvas>
+    <label id="loader">Loading...</label>
 <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.10.2/dist/nipplejs.min.js"></script>
     <script type="module" src="https://shipsio.pages.dev/client.js"></script>
   </body>
