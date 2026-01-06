@@ -180,6 +180,10 @@ async function handleInit(d){
 async function handlePlayers(d){
 	const b = await d.arrayBuffer();
 	const arr = new Float32Array(b);
+ let o=0;
+ while(o+6<arr.length){
+
+ }
 }
 
 function handlePlayer(arr,off){
