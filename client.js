@@ -117,7 +117,8 @@ class Player{
 		this.angle = 0;
 		this.ship = ship;
 		this.hpUV = 1;
-		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,new M2.setRotate(this.angle));
+		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,new M2().identity().m);
+		this.ll = world.add(rect);
 		players.set(id,this);
 		playersArray.push(this);
 	}
@@ -133,6 +134,11 @@ class Player{
 			this.c.add(d.scale(0.2));
 		}
 		this.vector.copy(vel);
+	}
+
+	frame(ratio){
+		this.c.addScaledVector(this.vector,ratio);
+		this.ll.matrix.identity().translate(this.c.x,this.c.y).rotate(this.angle).scale(1,1.5);
 	}
 }
 
