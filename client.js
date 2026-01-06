@@ -22,6 +22,7 @@ const r=new T2.Renderer(canvas,img);
 const playersArray = [];
 const players = new Map();
 await r.start();
+let myID = null;
 const ship=new T2.ORectangle(-3,-4,6,8);
 const world = r.world;
 const andromeda = new T2.Andromeda(r);
@@ -123,8 +124,7 @@ class Player{
 		playersArray.push(this);
 	}
 
-	move(arr){
-		const [id,x,y,vx,vy,angle] = arr;
+	move(id,x,y,vx,vy,angle){
 		this.angle = angle;
 		const v = new V2(vx,vy);
 		const p = new V2(x,y);
@@ -167,6 +167,7 @@ async function handleInit(d){
 	switch(data.type){
 		case "init":
 			console.log("Your ID is: "+data.id);
+			myID = data.id;
 			data.setup.forEach(p=>new Player(p));
 			break;
 		case "connect":
@@ -179,7 +180,11 @@ async function handleInit(d){
 async function handlePlayers(d){
 	const b = await d.arrayBuffer();
 	const arr = new Float32Array(b);
-	const id=arr[0];
-	const player = players.get(id);
-	player.move(arr);
+}
+
+function handlePlayer(arr,off){
+	const id=arr[off++],x=arr[off++],y=arr[off++],vx=arr[off++],vy=arr[off++],angle=arr[off++];
+	if(id===myID)return;
+	players.get(id).move(id,x,y,vx,vy,angle);
+	return off;
 }
