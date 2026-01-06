@@ -117,7 +117,7 @@ class Player{
 		this.angle = 0;
 		this.ship = ship;
 		this.hpUV = 1;
-		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,new M2.setRotation(angle));
+		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,new M2.setRotate(this.angle));
 		players.set(id,this);
 		playersArray.push(this);
 	}
