@@ -61,15 +61,17 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
       });
       this.resize();
-      
+      const basicShaderModule = dev.createShaderModule({code:Shaders.createBasicShader()});
       this.pipeline = dev.createRenderPipeline({
         layout:this.pipelineLayout,
         vertex:{
-          module:dev.createShaderModule({code:Shaders.createBasicVertex()}),
+          module:basicShaderModule,
+          entryPoint:"vs_main",
           buffers:[this.vertexBufferLayout,this.instanceBufferLayout]
         },
         fragment:{
-          module:dev.createShaderModule({code:Shaders.createBasicFragment()}),
+          module:basicShaderModule,
+          entryPoint:"fs_main",
           targets:[{format:this.gpu.format}]
         },
         primitive:{
@@ -179,16 +181,49 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
         usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
       });
       this.world = new World();
+      this.otherRenders = Array.from({length:3},()=>[]);
+      this.timeBuffer = new Float32Array(1);
+    }
+    
+    addShaderedWorld(world,shader,order){
+      const dev = this.gpu.device;
+      const target = {world};
+      const module = dev.createShaderModule({code:shader});
+      target.pipeline = dev.createRenderPipeline({
+        layout:this.pipelineLayout,
+        vertex:{
+          module,
+          buffers:[this.vertexBufferLayout,this.instanceBufferLayout],
+          entryPoint:"vs_main"
+        },
+        fragment:{
+          module,
+          targets:[{format:this.gpu.format}],
+          entryPoint:"fs_main"
+        },
+        primitive:{
+          topology:"triangle-strip"
+        }
+      });
+      target.buffer = dev.createBuffer({
+        size: MAX_MODEL_MATRICES*80,
+        usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+      });
+      this.otherRenders[order].push(target);
     }
     
     render(){
+      this.timeBuffer[0] = performance.now();
+      this.gpu.device.queue.writeBuffer(this.worldBuffer,60,this.timeBuffer);
       const encoder = this.gpu.device.createCommandEncoder();
       const view = this.gpu.ctx.getCurrentTexture().createView();
+      const first = this.otherRenders[Shaders.PRE_WORLD_RENDER].length===0;
+      for(const o of this.otherRenders[Shaders.PRE_WORLD_RENDER])this.renderOther(o,encoder,view,true);
       const rpass = encoder.beginRenderPass({
         colorAttachments:[{
             view,
             clearValue: { r: 0.1, g: 0.1, b: 0.1, a: 1 },
-            loadOp: "clear",
+            loadOp: /*first?"clear":*/"load",
             storeOp: "store"
         }]
       });
@@ -199,6 +234,7 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
       rpass.setBindGroup(0,this.bindGroup);
       rpass.draw(4,this.world.length);
       rpass.end();
+      for(const o of this.otherRenders[Shaders.POST_WORLD_RENDER])this.renderOther(o,encoder,view,false);
       if(this.particleCount>0){
         const cpass = encoder.beginComputePass();
         cpass.setPipeline(this.computePipeline);
@@ -211,7 +247,26 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
         ppass.draw(4,this.particleCount);
         ppass.end();
       }
+      for(const o of this.otherRenders[Shaders.POST_PARTICLE_RENDER])this.renderOther(o,encoder,view,false);
       this.gpu.device.queue.submit([encoder.finish()]);
+    }
+    
+    renderOther(target,encoder,view,first){
+      const rpass = encoder.beginRenderPass({
+        colorAttachments:[{
+            view,
+            clearValue: { r: 0.1, g: 0.1, b: 0.1, a: 1 },
+            loadOp: /*first?*/"clear"/*:"load"*/,
+            storeOp: "store"
+        }]
+      });
+      rpass.setPipeline(target.pipeline);
+      rpass.setVertexBuffer(0,this.vertexBuffer);
+      this.gpu.device.queue.writeBuffer(target.buffer,0,target.world.prepareInstances());
+      rpass.setVertexBuffer(1,target.buffer);
+      rpass.setBindGroup(0,this.bindGroup);
+      rpass.draw(4,target.world.length);
+      rpass.end();
     }
     
     loop(){
@@ -236,20 +291,28 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
     }
   }
   
-  class World{
+  class WorldBase{
     constructor(){
+      this.length=0;
+    }
+  }
+  
+  class World extends WorldBase{
+    constructor(){
+      super();
       this.objects = [];
       this.targets = [];
       this.callbacks = [];
       this.grid = new Map();
       this.camera = new Vector2();
+      this.arr=new Float32Array();
     }
     prepareInstances(){
       this.callbacks.forEach(c=>c());
       let offset = 0;
       const cam = this.camera.clone().floor();
       const targets = this.getFromMap(cam);
-      const arr = new Float32Array(targets.length*20);
+      if(!this.arr||this.arr.length!==targets.length*20)this.arr=new Float32Array(targets.length*20);
       for(const idx of targets){
         const t = this.targets[idx];
         if(t.isRenderObject){
@@ -258,27 +321,29 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
             this.objects[idx].update();
             this.objects[idx].needUpdate = false;
           }
-          offset=t.writeInstance(arr,offset);
+          offset=t.writeInstance(this.arr,offset);
         }
         else console.error("Invalid render object is not render object: "+t);
       }
       this.length = targets.length;
-      return arr;
+      return this.arr;
     }
     add(obj,uvMin,uvMax){
       if(!obj.isOObject){
         console.error("Invalid oobject is not oobject!");
-        return;
+        return null;
       }
       const idx = this.targets.length;
       this.objects.push(obj);
-      this.targets.push(new RenderObject(obj,uvMin,uvMax));
+	  const ro = new RenderObject(obj,uvMin,uvMax);
+      this.targets.push(ro);
       const vs = [obj.corner(-1,-1),obj.corner(-1,1),obj.corner(1,1),obj.corner(1,-1)];
       const keys = vs.map(v=>`${Math.floor(v.x/GRID_SIZE)}-${Math.floor(v.y/GRID_SIZE)}`);
       keys.forEach(k=>{
         if(!this.grid.has(k))this.grid.set(k,[]);
         this.grid.get(k).push(idx);
       });
+	  return ro;
     }
     addTextured(objects,uvMin,uvMax){
       if(!Array.isArray(objects))console.error("Invalid array is not array!");
@@ -295,6 +360,21 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
     getFromMap(v2){
       const x=v2.x,y=v2.y,s=1;
       return [[x,y],[x+s,y],[x-s,y],[x-s,y-s],[x-s,y+s],[x,y+s],[x,y-s],[x+s,y+s],[x+s,y-s]].map(t=>this.grid.get(`${t[0]}-${t[1]}`)??[]).flat();
+    }
+  }
+  
+  class FullscreenQuadWorld extends WorldBase{
+    constructor(minUV,maxUV){
+      super();
+      this.quad = new ORectangle(-20,-20,40,40);
+      this.target = new RenderObject(this.quad,minUV,maxUV);
+      this.arr=new Float32Array(20);
+    }
+    prepareInstances(){
+      if(this.target.isRenderObject)this.target.writeInstance(this.arr,0);
+      else console.error("Invalid render object is not a render object: "+this.target);
+      this.length=1;
+      return this.arr;
     }
   }
   
@@ -351,6 +431,7 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
 		neg(){this.x=-this.x;this.y=-this.y;return this;}
 		reset(){this.x=0;this.y=0;return this;}
 		rotate(s,c){const x=this.x*c-this.y*s,y=this.x*s+this.y*c;this.x=x;this.y=y;return this;}
+		addScaled(v,s){this.x+=v.x*s;this.y+=v.y*s;return this;}
 		static one(n){return new Vector2(n,n);}
 	}
 	
@@ -671,7 +752,6 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
           dir.rotate(s1,c1);
           if(opts.colorFrameCallback)color=opts.colorFrameCallback(color);
         }
-        console.log(b);
         self.r.gpu.device.queue.writeBuffer(self.r.particlesBuffer,(l+current)*8*4,b);
         self.r.particleCount+=remainings;
         current+=remainings;
@@ -692,10 +772,14 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
         @vertex
         fn vs_main(in: VertexInput)->VertexOutput{
           var out: VertexOutput;
+          let time = world[3][3];
+          var rWorld:mat4x4<f32> = world;
+          rWorld[3][3] = 1.0;
           let model = mat4x4<f32>(in.model_0,in.model_1,in.model_2,in.model_3);
-          out.position = world*model*vec4<f32>(in.position,0.0,1.0);
+          out.position = rWorld*model*vec4<f32>(in.position,0.0,1.0);
           out.uv = in.uv;
           out.uvMod = in.uvMod;
+          out.time=time;
           return out;
         }
       `;
@@ -715,12 +799,20 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
       `;
     }
     
+    static createBasicShader(){
+      return `
+        ${Shaders.createBasicVertex()}
+        ${Shaders.createBasicFragment()}
+      `;
+    }
+    
     static createFragmentInput(){
       return `
         struct FragInput{
           @builtin(position) position: vec4<f32>,
           @location(0) uv: vec2<f32>,
-          @location(1) uvMod: vec4<f32>
+          @location(1) uvMod: vec4<f32>,
+          @location(2) time:f32
         };
       `;
     }
@@ -744,7 +836,8 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
         struct VertexOutput{
           @builtin(position) position: vec4<f32>,
           @location(0) uv: vec2<f32>,
-          @location(1) uvMod: vec4<f32>
+          @location(1) uvMod: vec4<f32>,
+          @location(2) time:f32
         };
       `;
     }
@@ -848,7 +941,33 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
       `;
     }
     
+    static createCustomShader(vs,fs,helpers=[]){
+      console.log("helpers",helpers,"joined",helpers.join("\n\n"));
+      return helpers.join("\n\n")+(vs?`
+        ${Shaders.createInputsVertex()}
+        ${Shaders.createVertexInput()}
+        ${Shaders.createVertexOutput()}
+        @vertex
+        fn vs_main(in:VertexInput) -> VertexOutput{
+          ${vs}
+        }
+      `:Shaders.createBasicVertex())+"\n\n"+
+      (fs?`
+        ${Shaders.createFragmentInput()}
+        ${Shaders.createInputsFragment()}
+        @fragment
+        fn fs_main(in:FragInput) -> @location(0) vec4<f32>{
+          ${fs}
+        }
+      `:Shaders.createBasicFragment());
+    }
+    
   }
+  
+  
+  Shaders.PRE_WORLD_RENDER = 0;
+  Shaders.POST_WORLD_RENDER = 1;
+  Shaders.POST_PARTICLE_RENDER = 2;
 
 function setMaxModelMatrices(n) {
   MAX_MODEL_MATRICES = n;
@@ -858,4 +977,4 @@ function setMaxParticles(n) {
   MAX_PARTICLES = n;
 }
   
-  export {Renderer, Matrix2D,ORectangle,GPU,OCircle,Shaders,Vector2,RenderObject,Keyboard,Andromeda,setMaxModelMatrices,setMaxParticles};
+  export {Renderer, Matrix2D,ORectangle,GPU,OCircle,Shaders,Vector2,RenderObject,Keyboard,Andromeda,setMaxModelMatrices,setMaxParticles,FullscreenQuadWorld,World};
