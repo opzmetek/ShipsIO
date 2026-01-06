@@ -510,6 +510,44 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
     }
 		clone(){let a=new Matrix2D();a.m.set(this.m);return a;}
 	}
+
+	class Matrix2{
+		constructor(){
+			this.m = new Matrix2D().identity();
+			this.angle = 0;
+			this.translate = new Vector2(0,0);
+			this.shear = new Vector2(0,0);
+			this.scale = new Vector2(1,1);
+		}
+
+		mul(m){
+			this.m.mul(m);
+		}
+
+		setRotate(a){
+			this.angle=a;
+			this._update();
+		}
+
+		setTranslate(v){
+			this.translate.copy(v);
+			this._update();
+		}
+
+		setScale(s){
+			this.scale.copy(s);
+			this._update();
+		}
+
+		setShear(s){
+			this.shear.copy(s);
+			this._update();
+		}
+
+		_update(){
+			this.m.setTranslate(this.translate.x,this.translate.y).rotate(this.angle).shearX(this.shear.x).shearY(this.shear.y).scale(this.scale.x,this.scale.y);
+		}
+	}
 	
 	class OObject{
 	  constructor(x,y,sx,sy,matrix=new Matrix2D().identity(),group=-1){
