@@ -10,7 +10,7 @@
 
 import * as T2 from "https://shipsio.pages.dev/t2.module.js";
 const V2 = T2.Vector2;
-const M2 = T2.Matrxi2D;
+const M2 = T2.Matrix2;
 T2.setMaxParticles(100_000);
 const img = new Image();
 img.src="https://shipsio.pages.dev/ships.jpg";
