@@ -1,6 +1,16 @@
-//TODO player connection, player move, delta handling, player drawing, mouse&sjoystick data sending
+//file: ShipsIO/client.js
+//author: DYNAMYT
+//version: beta
+
+
+//TODO player drawing, mouse & joystick data sending, HP sending & handling, T2 new version, T2 $World.add() returns RenderObject
+//CHECK  player connection, player move, delta handling
+//FIX 
+
+
 import * as T2 from "https://shipsio.pages.dev/t2.module.js";
 const V2 = T2.Vector2;
+const M2 = T2.Matrxi2D;
 T2.setMaxParticles(100_000);
 const img = new Image();
 img.src="https://shipsio.pages.dev/ships.jpg";
@@ -107,6 +117,7 @@ class Player{
 		this.angle = 0;
 		this.ship = ship;
 		this.hpUV = 1;
+		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,new M2.setRotation(angle));
 		players.set(id,this);
 		playersArray.push(this);
 	}
@@ -161,6 +172,8 @@ async function handleInit(d){
 
 async function handlePlayers(d){
 	const b = await d.arrayBuffer();
-	const [x,y,vx,vy,angle,id] = new Float32Array(b);
-	
+	const arr = new Float32Array(b);
+	const id=arr[0];
+	const player = players.get(id);
+	player.move(arr);
 }
