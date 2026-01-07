@@ -111,6 +111,8 @@ if("ontouchstart" in window||navigator.maxTouchPoints>0){
 class Player{
 	constructor(arr){
 		const [id,name,x,y,ship] = arr;
+		players.set(id,this);
+		playersArray.push(this);
 		this.id = id;
 		this.name = name;
 		this.c = new V2(x,y);
@@ -120,8 +122,7 @@ class Player{
 		this.hpUV = 1;
 		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,new M2().identity().m);
 		this.ll = world.add(rect);
-		players.set(id,this);
-		playersArray.push(this);
+		console.log("ID:",id);
 	}
 
 	move(id,x,y,vx,vy,angle){
