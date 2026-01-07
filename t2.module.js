@@ -447,24 +447,40 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
 			m[12]=0;m[13]=0;m[14]=0;m[15]=1;
 			return this;}
 		copy(a){this.m.set(a.m);return this;}
-		mul(a){let b=this.m,c=a.m,r=new Float32Array(16);
+		mul(a){let b=this.m,c=a.m,r=this.tmp||(this.tmp = new Float32Array(16));
 			for(let i=0;i<4;i++)for(let j=0;j<4;j++)
 				r[i*4+j]=b[j]*c[i*4]+b[4+j]*c[i*4+1]+b[8+j]*c[i*4+2]+b[12+j]*c[i*4+3];
 			this.m=r;return this;}
 		translate(x,y){
-			return this.mul((new Matrix2D()).setTranslate(x,y));
+			this.m[12]+=x;
+			this.m[13]+=y;
+			return this;
 		}
 		rotate(rad){
-			return this.mul((new Matrix2D()).setRotate(rad));
+  			const m = this.m;
+  			const c = Math.cos(rad);
+  			const s = Math.sin(rad);
+  			const a = m[0], b = m[1], c0 = m[4], d = m[5];
+  			m[0] = a*c + c0*s;
+  			m[1] = b*c + d*s;
+  			m[4] = c0*c - a*s;
+  			m[5] = d*c - b*s;
+  			return this;
 		}
-	  shearX(k){
-		  return this.mul((new Matrix2D()).setShearX(k));
-	  }
-	  shearY(k){
-		  return this.mul((new Matrix2D()).setShearY(k));
-	  }
+	  	shearX(k){
+  			this.m[0]+=this.m[4]*k;
+  			this.m[1]+=this.m[5]*k;
+		    return this;
+	  	}
+	  	shearY(k){
+			this.m[1]*=k;
+		    return this;
+	  	}
 		scale(x,y){
-			return this.mul((new Matrix2D()).setScale(x,y));
+  			const m = this.m;
+  			m[0]*=x; m[1]*=x;
+  			m[4]*=y; m[5]*=y;
+  			return this;
 		}
 		setTranslate(x,y){this.identity();
 			this.m[12]=x;this.m[13]=y;return this;}
@@ -545,7 +561,7 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
 		}
 
 		_update(){
-			this.m.setTranslate(this.translate.x,this.translate.y).rotate(this.angle).shearX(this.shear.x).shearY(this.shear.y).scale(this.scale.x,this.scale.y);
+			this.m.identity().translate(this.translate.x,this.translate.y).rotate(this.angle).shearX(this.shear.x).shearY(this.shear.y).scale(this.scale.x,this.scale.y);
 		}
 	}
 	
