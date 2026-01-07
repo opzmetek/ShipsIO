@@ -121,7 +121,7 @@ class Player{
 		this.ship = ship;
 		this.hpUV = 1;
 		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,new M2().identity().m);
-		this.ll = world.add(rect);
+		this.ll = world.add(this.rect);
 		console.log("ID:",id);
 	}
 
