@@ -22,7 +22,7 @@ const r=new T2.Renderer(canvas,img);
 const playersArray = [];
 const players = new Map();
 await r.start();
-let myID = null;
+let myID = null,myVector = new V2();
 const ship=new T2.ORectangle(-3,-4,6,8);
 const world = r.world;
 const andromeda = new T2.Andromeda(r);
@@ -180,15 +180,18 @@ async function handleInit(d){
 async function handlePlayers(d){
 	const b = await d.arrayBuffer();
 	const arr = new Float32Array(b);
- let o=0;
- while(o+6<arr.length){
-
- }
+	let o=0;
+	while(o+6<arr.length){
+		o = handlePlayer(arr,o);
+	}
 }
 
 function handlePlayer(arr,off){
 	const id=arr[off++],x=arr[off++],y=arr[off++],vx=arr[off++],vy=arr[off++],angle=arr[off++];
-	if(id===myID)return;
+	if(id===myID){
+		myVector.x = vx;
+		myVector.y = vy;
+	};
 	players.get(id).move(id,x,y,vx,vy,angle);
 	return off;
 }
