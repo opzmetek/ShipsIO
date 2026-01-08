@@ -1031,4 +1031,4 @@ function setMaxParticles(n) {
   MAX_PARTICLES = n;
 }
   
-  export {Renderer, Matrix2D,ORectangle,GPU,OCircle,Shaders,Vector2,RenderObject,Keyboard,Andromeda,setMaxModelMatrices,setMaxParticles,FullscreenQuadWorld,World};
+  export {Renderer, Matrix2D,ORectangle,GPU,OCircle,Shaders,Vector2,RenderObject,Keyboard,Andromeda,setMaxModelMatrices,setMaxParticles,FullscreenQuadWorld,World,Matrix2};
