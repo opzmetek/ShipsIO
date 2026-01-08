@@ -193,6 +193,11 @@ function handlePlayer(arr,off){
 		myVector.x = vx;
 		myVector.y = vy;
 	};
-	players.get(id).move(id,x,y,vx,vy,angle);
+	const p = players.get(id);
+	if(!p){
+		console.error("Invalid ID:",id);
+		return off;
+	}
+	p.move(id,x,y,vx,vy,angle);
 	return off;
 }
