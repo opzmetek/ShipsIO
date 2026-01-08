@@ -179,6 +179,11 @@ async function handleInit(d){
 			console.log("Connected new Player: "+data.player[1]);
 			new Player(data.player);
 			break;
+		case "disconnect":
+			const id = data.id;
+			console.log(players.get(id).name,"disconnected!");
+			players.delete(id);
+			break;
 	}
 }
 
