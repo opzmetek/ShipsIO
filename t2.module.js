@@ -560,6 +560,10 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
 			this._update();
 		}
 
+		identity(){
+			this.m.identity();
+		}
+
 		_update(){
 			this.m.identity().translate(this.translate.x,this.translate.y).rotate(this.angle).shearX(this.shear.x).shearY(this.shear.y).scale(this.scale.x,this.scale.y);
 		}
