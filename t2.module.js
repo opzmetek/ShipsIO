@@ -415,7 +415,7 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
   Keyboard.init();
   
   class Vector2{
-		constructor(x=0,y=0){this.x=x;this.y=y;}
+		constructor(x=0,y=0){this.x=x||0;this.y=y||0;}
 		set(x,y){this.x=x;this.y=y;return this;}
 		copy(v){this.x=v.x;this.y=v.y;return this;}
 		add(v){this.x+=v.x;this.y+=v.y;return this;}
@@ -432,6 +432,7 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
 		reset(){this.x=0;this.y=0;return this;}
 		rotate(s,c){const x=this.x*c-this.y*s,y=this.x*s+this.y*c;this.x=x;this.y=y;return this;}
 		addScaled(v,s){this.x+=v.x*s;this.y+=v.y*s;return this;}
+	  	subImm(v,dest=new Vector2()){dest.x = this.x-v.x;dest.y = this.y-v.y;return dest;}
 		static one(n){return new Vector2(n,n);}
 	}
 	
