@@ -22,7 +22,7 @@ const r=new T2.Renderer(canvas,img);
 const playersArray = [];
 const players = new Map();
 await r.start();
-let myID = null,myVector = new V2();
+let myID = null,myVector = new V2(),myPos = new V2();
 const ship=new T2.ORectangle(-3,-4,6,8);
 const world = r.world;
 const andromeda = new T2.Andromeda(r);
@@ -115,7 +115,8 @@ class Player{
 		playersArray.push(this);
 		this.id = id;
 		this.name = name;
-		this.c = new V2(x,y);
+		this.center = new V2(x,y);
+		this.c = myPos.subImm(this.center);
 		this.vector = new V2(0,0);
 		this.angle = 0;
 		this.ship = ship;
@@ -136,11 +137,12 @@ class Player{
 		}
 		this.vector.x = vx;
 		this.vector.y = vy;
-		this.matrix.rotate(Math.atan2(dy,dx));
 	}
 
 	frame(ratio){
-		this.c.addScaledVector(this.vector,ratio);
+		this.center.addScaledVector(this.vector,ratio);
+		this.c.x = myPos.x-this.center.x;
+		this.c.y = myPos.y-this.center.y;
 		this.ll.matrix.identity().translate(this.c.x,this.c.y).rotate(this.angle).scale(1,1.5);
 	}
 }
@@ -194,6 +196,8 @@ function handlePlayer(arr,off){
 	if(id===myID){
 		myVector.x = vx;
 		myVector.y = vy;
+		myPos.x = x;
+		myPos.y = y;
 	};
 	const p = players.get(id);
 	if(!p){
