@@ -127,14 +127,14 @@ class Player{
 
 	move(id,x,y,vx,vy,angle){
 		this.angle = angle;
-		const v = new V2(vx,vy);
-		const p = new V2(x,y);
-		const d = p.subImm(this.c);
-		const l = d.sq();
+		const dx = this.c.x-x, dy = this.c.y-y;
+		const l = dx*dx+dy*dy;
 		if(l>=1) { //BIG DIFF - NO SMOOTHMOVE
-			this.c.add(d.scale(0.2));
+			this.c.x+=dx*0.2;
+			this.c.y+=dy*0.2
 		}
-		this.vector.copy(vel);
+		this.vector.x = vx;
+		this.vector.y = vy;
 	}
 
 	frame(ratio){
