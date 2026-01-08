@@ -198,6 +198,7 @@ function handlePlayer(arr,off){
 		myVector.y = vy;
 		myPos.x = x;
 		myPos.y = y;
+		return off;
 	};
 	const p = players.get(id);
 	if(!p){
