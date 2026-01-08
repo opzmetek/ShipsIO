@@ -538,30 +538,36 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
 
 		mul(m){
 			this.m.mul(m);
+			return this;
 		}
 
 		setRotate(a){
 			this.angle=a;
 			this._update();
+			return this;
 		}
 
 		setTranslate(v){
 			this.translate.copy(v);
 			this._update();
+			return this;
 		}
 
 		setScale(s){
 			this.scale.copy(s);
 			this._update();
+			return this;
 		}
 
 		setShear(s){
 			this.shear.copy(s);
 			this._update();
+			return this;
 		}
 
 		identity(){
 			this.m.identity();
+			return this;
 		}
 
 		_update(){
