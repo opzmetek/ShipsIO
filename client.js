@@ -188,7 +188,7 @@ async function handlePlayers(d){
 }
 
 function handlePlayer(arr,off){
-	const id=arr[off++],x=arr[off++],y=arr[off++],vx=arr[off++],vy=arr[off++],angle=arr[off++];
+	const x=arr[off++],y=arr[off++],vx=arr[off++],vy=arr[off++],angle=arr[off++],id=arr[off++];
 	if(id===myID){
 		myVector.x = vx;
 		myVector.y = vy;
