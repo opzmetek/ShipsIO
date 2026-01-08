@@ -120,7 +120,8 @@ class Player{
 		this.angle = 0;
 		this.ship = ship;
 		this.hpUV = 1;
-		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,new M2().identity().m);
+		this.matrix = new M2().identity();
+		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,this.matrix.m);
 		this.ll = world.add(this.rect,new V2(0,0),new V2(0.3,0.8));
 		console.log("ID:",id);
 	}
@@ -135,6 +136,7 @@ class Player{
 		}
 		this.vector.x = vx;
 		this.vector.y = vy;
+		this.matrix.rotate(Math.atan2(dy,dx));
 	}
 
 	frame(ratio){
