@@ -141,9 +141,9 @@ class Player{
 
 	frame(ratio){
 		this.center.addScaledVector(this.vector,ratio);
-		this.c.x = myPos.x-this.center.x;
-		this.c.y = myPos.y-this.center.y;
-		this.ll.matrix.identity().translate(this.c.x,this.c.y).rotate(this.angle).scale(1,1.5);
+		this.c.x = this.center.x-myPos.x;
+		this.c.y = this.center.y-myPos.y;
+		this.ll.matrix.identity().translate(this.c.x,this.c.y,false).rotate(this.angle,false).scale(1,1.5,false)._update();
 	}
 }
 
