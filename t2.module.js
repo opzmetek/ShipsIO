@@ -542,27 +542,27 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
 			return this;
 		}
 
-		setRotate(a){
+		setRotate(a,f=true){
 			this.angle=a;
-			this._update();
+			if(f)this._update();
 			return this;
 		}
 
-		setTranslate(v){
+		setTranslate(v,f=true){
 			this.translate.copy(v);
-			this._update();
+			if(f)this._update();
 			return this;
 		}
 
-		setScale(s){
+		setScale(s,f=true){
 			this.scale.copy(s);
-			this._update();
+			if(f)this._update();
 			return this;
 		}
 
-		setShear(s){
+		setShear(s,f=true){
 			this.shear.copy(s);
-			this._update();
+			if(f)this._update();
 			return this;
 		}
 
