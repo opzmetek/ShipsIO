@@ -39,8 +39,10 @@ server.onerror = e=>{
 resize();
 start();
 const accumulator = new V2();
+canvas.tabIndex = 0;
+canvas.focus();
 canvas.addEventListener("keydown",e=>{
-  const k = e.keyCode;
+  const k = e.key;
   switch(k){
     case "w":
       send({type:"move",vx:1});
@@ -49,7 +51,7 @@ canvas.addEventListener("keydown",e=>{
       send({type:"move",vx:-1});
       break;
     case "a":
-      send({type:"move",vy:1});
+      send({type:"move",vy:-1});
       break;
     case "d":
       send({type:"move",vy:1});
@@ -57,7 +59,7 @@ canvas.addEventListener("keydown",e=>{
   }
 });
 canvas.addEventListener("keyup",e=>{
-  const k = e.keyCode;
+  const k = e.key;
   switch(k){
     case "w":
     case "s":
@@ -80,7 +82,7 @@ if("ontouchstart" in window||navigator.maxTouchPoints>0){
     mode:'dynamic',
     color:'red',
     size:100,
-    treshold:0.1,
+    threshold:0.1,
     fadeTime:0.5,
     multitouch:true,
     maxNumberOfNipples:2,
@@ -98,7 +100,7 @@ if("ontouchstart" in window||navigator.maxTouchPoints>0){
 
   j.on('move',(e,d)=>{
     if(d.identifier===lId){
-      accumulator.addScaled(data.vector,data.force);
+      accumulator.addScaled(d.vector,d.force);
     }
   });
 
@@ -116,7 +118,7 @@ class Player{
 		this.id = id;
 		this.name = name;
 		this.center = new V2(x,y);
-		this.c = myPos.subImm(this.center);
+		this.c = this.center.subImm(myPos);
 		this.vector = new V2(0,0);
 		this.angle = 0;
 		this.ship = ship;
@@ -129,7 +131,7 @@ class Player{
 
 	move(id,x,y,vx,vy,angle){
 		this.angle = angle;
-		const dx = this.c.x-x, dy = this.c.y-y;
+		const dx = this.center.x-x, dy = this.center.y-y;
 		const l = dx*dx+dy*dy;
 		if(l>=1) { //BIG DIFF - NO SMOOTHMOVE
 			this.c.x+=dx*0.2;
