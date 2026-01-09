@@ -134,8 +134,8 @@ class Player{
 		const dx = this.center.x-x, dy = this.center.y-y;
 		const l = dx*dx+dy*dy;
 		if(l>=1) { //BIG DIFF - NO SMOOTHMOVE
-			this.c.x+=dx*0.2;
-			this.c.y+=dy*0.2
+			this.c.x-=dx*0.2;
+			this.c.y-=dy*0.2
 		}
 		this.vector.x = vx;
 		this.vector.y = vy;
