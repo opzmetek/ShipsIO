@@ -572,7 +572,7 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
 		}
 
 		_update(){
-			this.m.identity().translate(this.translate.x,this.translate.y).rotate(this.angle).shearX(this.shear.x).shearY(this.shear.y).scale(this.scale.x,this.scale.y);
+			this.m.identity().scale(this.scale.x,this.scale.y).shearX(this.shear.x).shearY(this.shear.y).rotate(this.angle).translate(this.translate.x,this.translate.y);
 		}
 	}
 	
