@@ -26,7 +26,7 @@ let myID = null,myVector = new V2(),myPos = new V2();
 const ship=new T2.ORectangle(-3,-4,6,8);
 const world = r.world;
 const andromeda = new T2.Andromeda(r);
-const server = new WebSocket("wss://shipsioserver.onrender.com");
+const server = new WebSocket("wss://trueshipsioserver.onrender.com");
 await new Promise((r,e)=>{server.onopen=r;server.onerror=e;});
 document.getElementById("loader").style.display="none";
 server.onmessage = handle;
