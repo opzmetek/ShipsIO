@@ -117,16 +117,16 @@ class Player{
 		playersArray.push(this);
 		this.id = id;
 		this.name = name;
-		this.center = new V2(x,y);
-		this.c = this.center.subImm(myPos);
-		this.vector = new V2(0,0);
-		this.angle = 0;
-		this.ship = ship;
+		this.center = new V2(x,y);// In T2 Units
+		this.c = this.center.subImm(myPos);// Relative T2 Units to myPos
+		this.vector = new V2(0,0);// In 1/30 units(1 frame/30 FPS)
+		this.angle = 0;//radians
+		this.ship = ship;// ship index
 		this.hpUV = 1;
-		this.matrix = new M2().identity();
-		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,this.matrix.m);
-		this.ll = world.add(this.rect,new V2(0,0),new V2(0.3,0.8));
-		console.log("ID:",id);
+		this.matrix = new M2().identity();//T2 Matrix2
+		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,this.matrix.m);//T2 ORectangle
+		this.ll = world.add(this.rect,new V2(0,0),new V2(0.3,0.8));// LowLevel T2 RenderObject
+		console.log("ID:",id);//DEBUG
 	}
 
 	move(id,x,y,vx,vy,angle){
@@ -134,24 +134,30 @@ class Player{
 		const dx = this.center.x-x, dy = this.center.y-y;
 		const l = dx*dx+dy*dy;
 		if(l>=1) { //BIG DIFF - NO SMOOTHMOVE
-			this.c.x-=dx*0.2;
-			this.c.y-=dy*0.2
+			this.center.x-=dx*0.2;
+			this.center.y-=dy*0.2
 		}
 		this.vector.x = vx;
 		this.vector.y = vy;
 	}
 
-	frame(ratio){
+	frame(ratio/*=30 FPS / actual FPS*/){
 		this.center.addScaledVector(this.vector,ratio);
-		this.c.x = this.center.x-myPos.x;
-		this.c.y = this.center.y-myPos.y;
-		this.ll.matrix.identity().translate(this.c.x,this.c.y,false).rotate(this.angle,false).scale(1,1.5,false)._update();
+		this.c.x = this.center.x-myPos.x;//interpolation
+		this.c.y = this.center.y-myPos.y;//   -||-
+		this.ll.matrix.identity().translate(this.c.x,this.c.y,false).rotate(this.angle,false).scale(1,1.5,false)._update();//LowLevel Update
 	}
 }
 
 function start(){
-  send({type:"init",name:"OPZ"});
-  world.add(ship,new V2(0,0),new V2(0.1,0.2));
+  	send({type:"init",name:"OPZ"});
+  	world.add(ship,new V2(0,0),new V2(0.1,0.2));
+	world.addCallback(dt=>{
+		const ratio = dt*0.003;
+		for(const p of playersArray){
+			p.frame(ratio);
+		}
+	});
 }
 
 function resize(){
