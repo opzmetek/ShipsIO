@@ -19,6 +19,8 @@ await img.decode();
 const canvas = document.getElementById("game");
 canvas.onresize=resize;
 const r=new T2.Renderer(canvas,img);
+r.worldMatrix.scale(0.5,0.5);
+r.recomputeMatrix();
 const playersArray = [];
 const players = new Map();
 await r.start();
