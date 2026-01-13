@@ -146,6 +146,7 @@ class Player{
 		this.c.x = this.center.x-myPos.x;//World space to Local space
 		this.c.y = this.center.y-myPos.y;//   -||-
 		this.matrix.setTranslate(this.c,false).setRotate(this.angle,false).setScale(1,1.5,false)._update();//HighLevel Update
+		console.log(this.matrix.translate);
 		this.ll.matrix = this.matrix.m;//LowLevel Assign
 	}
 }
@@ -213,7 +214,7 @@ function handlePlayer(arr,off){
 		myPos.x = x;
 		myPos.y = y;
 		return off;
-	};
+	}
 	const p = players.get(id);
 	if(!p){
 		console.error("Invalid ID:",id);
