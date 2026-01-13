@@ -3,9 +3,9 @@
 //version: beta
 
 
-//TODO player drawing, mouse & joystick data sending, HP sending & handling, T2 new version, T2 $World.add() returns RenderObject
-//CHECK  player connection, player move, delta handling
-//FIX 
+//TODO mouse & joystick data sending, HP sending & handling
+//CHECK  player connection, player move, delta handling, 
+//FIX player drawing
 
 
 import * as T2 from "https://shipsio.pages.dev/t2.module.js";
@@ -148,7 +148,7 @@ class Player{
 		this.c.x = this.center.x-myPos.x;//World space to Local space
 		this.c.y = this.center.y-myPos.y;//   -||-
 		this.matrix.setTranslate(this.c,false).setRotate(this.angle,false).setScale(1,1.5,false)._update();//HighLevel Update
-		console.log(this.matrix.translate);
+		console.log(this.matrix.m.m);
 		this.ll.matrix = this.matrix.m;//LowLevel Assign
 	}
 }
