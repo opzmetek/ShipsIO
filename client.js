@@ -17,13 +17,11 @@ img.src="https://shipsio.pages.dev/ships.jpg";
 img.crossOrigin="anonymous";
 await img.decode();
 const canvas = document.getElementById("game");
-canvas.onresize=resize;
+canvas.addEventListener("resize",resize);
 const r=new T2.Renderer(canvas,img);
 const playersArray = [];
 const players = new Map();
 await r.start();
-r.worldMatrix.scale(2,2);
-r.recomputeMatrix();
 let myID = null,myVector = new V2(),myPos = new V2();
 const ship=new T2.ORectangle(-3,-4,6,8);
 const world = r.world;
@@ -41,9 +39,7 @@ server.onerror = e=>{
 resize();
 start();
 const accumulator = new V2();
-canvas.tabIndex = 0;
-canvas.focus();
-canvas.addEventListener("keydown",e=>{
+window.addEventListener("keydown",e=>{
   const k = e.key;
   switch(k){
     case "w":
@@ -60,7 +56,7 @@ canvas.addEventListener("keydown",e=>{
       break;
   }
 });
-canvas.addEventListener("keyup",e=>{
+window.addEventListener("keyup",e=>{
   const k = e.key;
   switch(k){
     case "w":
