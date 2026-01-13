@@ -145,7 +145,8 @@ class Player{
 		this.center.addScaled(this.vector,ratio);
 		this.c.x = this.center.x-myPos.x;//interpolation
 		this.c.y = this.center.y-myPos.y;//   -||-
-		this.ll.matrix.identity().translate(this.c.x,this.c.y,false).rotate(this.angle,false).scale(1,1.5,false)._update();//LowLevel Update
+		this.matrix.identity().translate(this.c.x,this.c.y,false).rotate(this.angle,false).scale(1,1.5,false)._update();//LowLevel Update
+		this.ll.matrix = this.matrix.m;
 	}
 }
 
