@@ -142,7 +142,7 @@ class Player{
 	}
 
 	frame(ratio/*=30 FPS / actual FPS*/){
-		this.center.addScaledVector(this.vector,ratio);
+		this.center.addScaled(this.vector,ratio);
 		this.c.x = this.center.x-myPos.x;//interpolation
 		this.c.y = this.center.y-myPos.y;//   -||-
 		this.ll.matrix.identity().translate(this.c.x,this.c.y,false).rotate(this.angle,false).scale(1,1.5,false)._update();//LowLevel Update
