@@ -212,13 +212,13 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
       this.otherRenders[order].push(target);
     }
     
-    render(){
+    render(dt){
       this.timeBuffer[0] = performance.now();
       this.gpu.device.queue.writeBuffer(this.worldBuffer,60,this.timeBuffer);
       const encoder = this.gpu.device.createCommandEncoder();
       const view = this.gpu.ctx.getCurrentTexture().createView();
       const first = this.otherRenders[Shaders.PRE_WORLD_RENDER].length===0;
-      for(const o of this.otherRenders[Shaders.PRE_WORLD_RENDER])this.renderOther(o,encoder,view,true);
+      for(const o of this.otherRenders[Shaders.PRE_WORLD_RENDER])this.renderOther(o,encoder,view,true,dt);
       const rpass = encoder.beginRenderPass({
         colorAttachments:[{
             view,
@@ -229,12 +229,12 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
       });
       rpass.setPipeline(this.pipeline);
       rpass.setVertexBuffer(0,this.vertexBuffer);
-      this.gpu.device.queue.writeBuffer(this.instanceBuffer,0,this.world.prepareInstances());
+      this.gpu.device.queue.writeBuffer(this.instanceBuffer,0,this.world.prepareInstances(dt));
       rpass.setVertexBuffer(1,this.instanceBuffer);
       rpass.setBindGroup(0,this.bindGroup);
       rpass.draw(4,this.world.length);
       rpass.end();
-      for(const o of this.otherRenders[Shaders.POST_WORLD_RENDER])this.renderOther(o,encoder,view,false);
+      for(const o of this.otherRenders[Shaders.POST_WORLD_RENDER])this.renderOther(o,encoder,view,false,dt);
       if(this.particleCount>0){
         const cpass = encoder.beginComputePass();
         cpass.setPipeline(this.computePipeline);
@@ -247,11 +247,11 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
         ppass.draw(4,this.particleCount);
         ppass.end();
       }
-      for(const o of this.otherRenders[Shaders.POST_PARTICLE_RENDER])this.renderOther(o,encoder,view,false);
+      for(const o of this.otherRenders[Shaders.POST_PARTICLE_RENDER])this.renderOther(o,encoder,view,false,dt);
       this.gpu.device.queue.submit([encoder.finish()]);
     }
     
-    renderOther(target,encoder,view,first){
+    renderOther(target,encoder,view,first,dt){
       const rpass = encoder.beginRenderPass({
         colorAttachments:[{
             view,
@@ -262,16 +262,16 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
       });
       rpass.setPipeline(target.pipeline);
       rpass.setVertexBuffer(0,this.vertexBuffer);
-      this.gpu.device.queue.writeBuffer(target.buffer,0,target.world.prepareInstances());
+      this.gpu.device.queue.writeBuffer(target.buffer,0,target.world.prepareInstances(dt));
       rpass.setVertexBuffer(1,target.buffer);
       rpass.setBindGroup(0,this.bindGroup);
       rpass.draw(4,target.world.length);
       rpass.end();
     }
     
-    loop(){
-      this.render();
-      requestAnimationFrame(()=>this.loop());
+    loop(dt){
+      this.render(dt);
+      requestAnimationFrame(t=>this.loop(t));
     }
     
     recomputeMatrix(){
@@ -307,8 +307,8 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
       this.camera = new Vector2();
       this.arr=new Float32Array();
     }
-    prepareInstances(){
-      this.callbacks.forEach(c=>c());
+    prepareInstances(dt){
+      this.callbacks.forEach(c=>c(dt));
       let offset = 0;
       const cam = this.camera.clone().floor();
       const targets = this.getFromMap(cam);
