@@ -23,7 +23,7 @@ const playersArray = [];
 const players = new Map();
 await r.start();
 let myID = null,myVector = new V2(),myPos = new V2();
-const ship=new T2.ORectangle(-3,-4,6,8);
+const ship=new T2.ORectangle(-0.5,-0.75,1,1.5);
 const world = r.world;
 const andromeda = new T2.Andromeda(r);
 const server = new WebSocket("wss://trueshipsioserver.onrender.com");
@@ -143,7 +143,7 @@ class Player{
 		this.center.addScaled(this.vector,ratio);
 		this.c.x = this.center.x-myPos.x;//World space to Local space
 		this.c.y = this.center.y-myPos.y;//   -||-
-		this.matrix.setTranslate(this.c,false).setRotate(this.angle,false).setScale(1,1.5,false)._update();//HighLevel Update
+		this.matrix.setTranslate(this.c,false).setRotate(this.angle,false)._update();//HighLevel Update
 		this.ll.matrix = this.matrix.m;//LowLevel Assign
 	}
 }
