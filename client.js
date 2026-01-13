@@ -22,7 +22,7 @@ const r=new T2.Renderer(canvas,img);
 const playersArray = [];
 const players = new Map();
 await r.start();
-r.worldMatrix.scale(0.5,0.5);
+r.worldMatrix.scale(2,2);
 r.recomputeMatrix();
 let myID = null,myVector = new V2(),myPos = new V2();
 const ship=new T2.ORectangle(-3,-4,6,8);
