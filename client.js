@@ -116,14 +116,14 @@ class Player{
 		this.id = id;
 		this.name = name;
 		this.center = new V2(x,y);// In T2 Units
-		this.c = this.center.subImm(myPos);// Relative T2 Units to myPos
 		this.vector = new V2(0,0);// In 1/30 units(1 frame/30 FPS)
 		this.angle = 0;//radians
 		this.ship = ship;// ship index
 		this.hpUV = 1;
 		this.matrix = new M2().identity();//T2 Matrix2
-		this.rect = new T2.ORectangle(this.c.x,this.c.y,1,1.5,this.matrix.m);//T2 ORectangle
+		this.rect = new T2.ORectangle(0,0,1,1.5,this.matrix.m);//T2 ORectangle
 		this.ll = world.add(this.rect,new V2(0,0),new V2(0.3,0.8));// LowLevel T2 RenderObject
+		this.temp = new V2();
 		console.log("ID:",id);//DEBUG
 	}
 
@@ -141,9 +141,7 @@ class Player{
 
 	frame(ratio/*=30 FPS / actual FPS*/){
 		this.center.addScaled(this.vector,ratio);
-		this.c.x = this.center.x-myPos.x;//World space to Local space
-		this.c.y = this.center.y-myPos.y;//   -||-
-		this.matrix.setTranslate(this.c,false).setRotate(this.angle,false)._update();//HighLevel Update
+		this.matrix.setTranslate(this.center.subImm(myPos,this.temp),false).setRotate(this.angle,false)._update();//HighLevel Update
 		this.ll.matrix = this.matrix.m;//LowLevel Assign
 	}
 }
