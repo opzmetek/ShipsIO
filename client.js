@@ -148,7 +148,6 @@ class Player{
 		this.c.x = this.center.x-myPos.x;//World space to Local space
 		this.c.y = this.center.y-myPos.y;//   -||-
 		this.matrix.setTranslate(this.c,false).setRotate(this.angle,false).setScale(1,1.5,false)._update();//HighLevel Update
-		console.log(this.matrix.m.m);
 		this.ll.matrix = this.matrix.m;//LowLevel Assign
 	}
 }
