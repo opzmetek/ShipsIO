@@ -53,7 +53,7 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
           { shaderLocation: 6, offset: 64, format: "float32x4" }
         ]
       };
-      this.worldMatrix = new Matrix2D().identity().m;
+      this.worldMatrix = new Matrix2D().identity();
       this.scaleY = 0.1;
 
       this.worldBuffer = dev.createBuffer({
@@ -276,8 +276,8 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
     
     recomputeMatrix(){
       this.scaleX = this.aspect*this.scaleY;
-      this.worldMatrix = new Matrix2D().setScale(this.scaleX,-this.scaleY).m;
-      this.gpu.device.queue.writeBuffer(this.worldBuffer,0,this.worldMatrix);
+      this.worldMatrix = new Matrix2D().setScale(this.scaleX,-this.scaleY);
+      this.gpu.device.queue.writeBuffer(this.worldBuffer,0,this.worldMatrix.m);
     }
     
     resize(){
