@@ -189,7 +189,7 @@ async function handleInit(d){
 			break;
 		case "disconnect":
 			const id = data.id;
-			console.log(players.get(id).name,"disconnected!");
+			console.log(players.get(id)?.name,"disconnected!");
 			players.delete(id);
 			break;
 	}
