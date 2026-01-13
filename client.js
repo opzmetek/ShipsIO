@@ -188,8 +188,12 @@ async function handleInit(d){
 			break;
 		case "disconnect":
 			const id = data.id;
-			console.log(players.get(id)?.name,"disconnected!");
+			const p = players.get(id);
+			console.log(p?.name,"disconnected!");
 			players.delete(id);
+			const i = playersArray.find(p);
+			if(i>=0)playersArray.splice(i,1);
+			world.remove(p.rect);
 			break;
 	}
 }
