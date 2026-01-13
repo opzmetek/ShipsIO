@@ -132,7 +132,6 @@ class Player{
 	}
 
 	move(id,x,y,vx,vy,angle){
-		this.angle = angle;
 		const dx = this.center.x-x, dy = this.center.y-y;
 		const l = dx*dx+dy*dy;
 		if(l>=1) { //BIG DIFF - NO SMOOTHMOVE
@@ -141,6 +140,7 @@ class Player{
 		}
 		this.vector.x = vx;
 		this.vector.y = vy;
+		this.angle = Math.atan2(this.vector.y,this.vector.x);
 	}
 
 	frame(ratio/*=30 FPS / actual FPS*/){
