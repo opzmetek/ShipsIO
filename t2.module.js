@@ -752,7 +752,7 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
   
   class RenderObject{
     constructor(obj,uvMin,uvMax){
-      this.matrix = obj.matrix.clone();
+      this.matrix = obj.matrix;
       this.from(obj);
       this.uvMin = uvMin;
       this.uvMax = uvMax;
@@ -772,7 +772,7 @@ let MAX_MODEL_MATRICES = 100,GRID_SIZE = 15,MAX_PARTICLES = 100000;
     }
     
     from(obj){
-      this.matrix.copy(obj.matrix);
+      this.matrix = obj.matrix;
       const hw = obj.half?.x??obj.radius;
       const hh = obj.half?.y??obj.radius;
       this.matrix.translate(obj.center.x,obj.center.y);
